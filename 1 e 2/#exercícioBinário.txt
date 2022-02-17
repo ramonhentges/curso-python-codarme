@@ -1,0 +1,7 @@
+#exercícioBinário
+
+Nome: ramon
+
+Código binário:  01110010 01100001 01101101 01101111 01101110
+
+Bytes: 5
