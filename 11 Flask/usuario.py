@@ -6,6 +6,7 @@ class Usuario:
         self.id = Usuario.id
         self.nome = nome
         self.email = email
+        self.tipo = 'Usuário'
         Usuario.quantidade += 1
         Usuario.id += 1
 
