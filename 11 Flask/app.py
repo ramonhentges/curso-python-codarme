@@ -58,9 +58,21 @@ def create_user():
     }
 
 
-@app.route('/api/users/<int:id>/')
-def get_user(id):
+def get_user_or_404(id):
     for user in users:
         if user.id == id:
-            return jsonify(user.__dict__)
+            return user
     abort(404, 'Usuário não encontrado')
+
+
+@app.route('/api/users/<int:id>/')
+def get_user(id):
+    user = get_user_or_404(id)
+    return jsonify(user.__dict__)
+
+
+@app.route('/api/users/<int:id>/', methods=['DELETE'])
+def delete_user(id):
+    user = get_user_or_404(id)
+    users.remove(user)
+    return jsonify(id=id)
