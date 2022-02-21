@@ -76,3 +76,22 @@ def delete_user(id):
     user = get_user_or_404(id)
     users.remove(user)
     return jsonify(id=id)
+
+
+@app.route('/api/users/<int:id>/', methods=['PUT'])
+def edit_user(id):
+    data = request.get_json()
+    email = data.get('email')
+    nome = data.get('nome')
+
+    if not email:
+        abort(400, "'email': O email é obrigatório")
+
+    if not nome:
+        abort(400, "'nome': O nome é obrigatório")
+
+    user = get_user_or_404(id)
+    user.email = email
+    user.nome = nome
+
+    return user.__dict__
