@@ -95,3 +95,23 @@ def edit_user(id):
     user.nome = nome
 
     return user.__dict__
+
+
+@app.route('/api/users/<int:id>/', methods=['PATCH'])
+def edit_user_partial(id):
+    data = request.get_json()
+    email = data.get('email')
+    nome = data.get('nome')
+
+    user = get_user_or_404(id)
+    if 'email' in data.keys():
+        if not email:
+            abort(400, "'email': O email é obrigatório")
+        user.email = email
+
+    if 'nome' in data.keys():
+        if not nome:
+            abort(400, "'nome': O nome é obrigatório")
+        user.nome = nome
+
+    return user.__dict__
