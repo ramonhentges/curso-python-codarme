@@ -20,3 +20,10 @@ def list_users():
     for user in users:
         users_dict.append(user.__dict__)
     return jsonify(users_dict)
+
+
+@app.route('/api/users/<int:id>/')
+def get_user(id):
+    for user in users:
+        if user.id == id:
+            return jsonify(user.__dict__)
