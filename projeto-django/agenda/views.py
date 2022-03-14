@@ -1,3 +1,4 @@
+from datetime import date
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
@@ -9,7 +10,8 @@ from agenda.models import Evento
 
 
 def listar_eventos(request):
-    eventos = Evento.objects.all()
+    hoje = date.today()
+    eventos = Evento.objects.filter(data__gte=hoje)
     return render(request=request, context={"eventos": eventos}, template_name="agenda/listar_eventos.html")
 
 
