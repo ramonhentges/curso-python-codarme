@@ -1,0 +1,40 @@
+<html>
+
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+    </style>
+</head>
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Local/Link</th>
+            <th>Data</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for evento in eventos %}
+        <tr>
+            <td>{{evento.nome}}</td>
+            <td>{{evento.categoria.nome}}</td>
+            <td>{% firstof evento.local evento.link %}</td>
+            <td>{{evento.data}}</td>
+            <td><a href="exibir_evento.html">Ver detalhes</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</html>

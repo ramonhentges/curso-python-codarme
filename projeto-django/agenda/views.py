@@ -1,21 +1,26 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.template import loader
 
-from agenda.models import eventos
+from agenda.models import Evento
+
+
 # Create your views here.
 
 
-def index(request):
-    return HttpResponse("Olá Mundo")
+def listar_eventos(request):
+    eventos = Evento.objects.all()
+    return render(request=request, context={"eventos": eventos}, template_name="agenda/listar_eventos.html")
 
 
 def exibir_evento(request):
-    evento = eventos[0]
-    return HttpResponse(f"""
-    <html>
-    <body>
-        <h1>{evento.nome}</h1>
-        <p>Local: {evento.local}</p>
-        <p>Categoria: {evento.categoria}</p>
-    </body>
-    """)
+    evento = {
+        "nome": "teste",
+        "categoria": "A",
+        "local": "Rio de Janeiro"
+    }
+    #template = loader.get_template("agenda/exibir_evento.html")
+    # rendered_template = template.render(
+    #    context={"evento": evento}, request=request)
+    # return HttpResponse(rendered_template)
+    return render(request=request, context={"evento": evento}, template_name="agenda/exibir_evento.html")
