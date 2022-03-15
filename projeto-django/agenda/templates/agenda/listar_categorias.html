@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+    </style>
+</head>
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Quantidade de eventos</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for categoria in categorias %}
+        <tr>
+            <td>{{categoria.nome}}</td>
+            <td>{{categoria.qtd_eventos}}</td>
+            <td><a href="{% url 'exibir_categoria' categoria.id %}">Ver detalhes</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</html>
