@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 class ListaDeTarefas:
     def __init__(self):
         """
@@ -31,10 +34,20 @@ class ListaDeTarefas:
         """
         Retorna a lista de tarefas atrasadas. Ver método: Tarefa.atrasada.
         """
-        pass
+        tarefas_atrasadas = []
+        for tarefa in self._tarefas:
+            if tarefa.atrasada():
+                tarefas_atrasadas.append(tarefa)
+
+        return tarefas_atrasadas
 
     def get_tarefas_para_hoje(self):
         """
         Retorna a lista de tarefas que tenham data = hoje.
         """
-        pass
+        hoje = datetime.now().date()
+        tarefas_para_hoje = []
+        for tarefa in self._tarefas:
+            if tarefa.data_notificacao.date() == hoje:
+                tarefas_para_hoje.append(tarefa)
+        return tarefas_para_hoje

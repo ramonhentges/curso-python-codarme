@@ -2,6 +2,7 @@ import unittest
 
 from tarefa import Tarefa
 from lista_de_tarefas import ListaDeTarefas
+from datetime import datetime, timedelta
 
 
 class TestAdicionarTarefa(unittest.TestCase):
@@ -47,6 +48,54 @@ class TestGetTarefas(unittest.TestCase):
             tarefa_um,
             tarefa_dois,
             tarefa_concluida,
+        ])
+
+
+class TestGetTarefasAtrasadas(unittest.TestCase):
+    def test_retorna_lista_de_tarefas_atrasadas(self):
+        agora = datetime.now()
+        futuro = agora + timedelta(days=30)
+        passado = agora - timedelta(days=30)
+
+        tarefa_atrasada = Tarefa("Tarefa Teste 1", data_notificacao=passado)
+        tarefa_nao_atrasada = Tarefa("Tarefa Teste 2", data_notificacao=futuro)
+        tarefa_concluida_passada = Tarefa(
+            "Tarefa Teste 3", data_notificacao=passado)
+        tarefa_concluida_passada.concluir()
+        lista = ListaDeTarefas()
+
+        lista.adicionar_tarefa(tarefa_atrasada)
+        lista.adicionar_tarefa(tarefa_nao_atrasada)
+        lista.adicionar_tarefa(tarefa_concluida_passada)
+
+        self.assertEqual(lista.get_tarefas_atrasadas(), [
+            tarefa_atrasada,
+        ])
+
+
+class TestGetTarefasParaHoje(unittest.TestCase):
+    def test_retorna_lista_de_tarefas_para_hoje(self):
+        agora = datetime.now()
+        futuro = agora + timedelta(days=30)
+        passado = agora - timedelta(days=30)
+
+        tarefa_no_passado = Tarefa("Tarefa Teste 1", data_notificacao=passado)
+        tarefa_hoje = Tarefa("Tarefa Teste 2", data_notificacao=agora)
+        tarefa_concluida_hoje = Tarefa(
+            "Tarefa Teste 3", data_notificacao=agora)
+        tarefa_concluida_hoje.concluir()
+        tarefa_futura = Tarefa("Tarefa Teste 4", data_notificacao=futuro)
+
+        lista = ListaDeTarefas()
+
+        lista.adicionar_tarefa(tarefa_no_passado)
+        lista.adicionar_tarefa(tarefa_hoje)
+        lista.adicionar_tarefa(tarefa_concluida_hoje)
+        lista.adicionar_tarefa(tarefa_futura)
+
+        self.assertEqual(lista.get_tarefas_para_hoje(), [
+            tarefa_hoje,
+            tarefa_concluida_hoje,
         ])
 
 

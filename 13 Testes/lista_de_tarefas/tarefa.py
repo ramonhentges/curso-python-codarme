@@ -1,5 +1,5 @@
 # Test Driven Development: escrever os testes antes da nossa lógica.
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 
 class Tarefa:
@@ -37,6 +37,10 @@ class Tarefa:
 
     def atrasada(self):
         """
-        Diz se tarefa está atrasada. Ou seja, data < hoje.
+        Diz se tarefa está atrasada. Ou seja, data < hoje e não concluida
         """
-        pass
+        if self.concluida == True:
+            return False
+
+        hoje = datetime.now()
+        return self.data_notificacao.date() < hoje.date()
