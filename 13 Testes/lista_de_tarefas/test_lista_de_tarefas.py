@@ -19,14 +19,34 @@ class TestGetTarefas(unittest.TestCase):
     def test_retorna_lista_de_tarefas_adicionadas(self):
         tarefa_um = Tarefa("Tarefa Teste 1")
         tarefa_dois = Tarefa("Tarefa Teste 2")
+        tarefa_concluida = Tarefa("Tarefa Teste 3")
+        tarefa_concluida.concluir()
         lista = ListaDeTarefas()
 
         lista.adicionar_tarefa(tarefa_um)
         lista.adicionar_tarefa(tarefa_dois)
+        lista.adicionar_tarefa(tarefa_concluida)
 
         self.assertEqual(lista.get_tarefas(), [
             tarefa_um,
             tarefa_dois,
+        ])
+
+    def test_retorna_lista_de_tarefas_com_concluidas(self):
+        tarefa_um = Tarefa("Tarefa Teste 1")
+        tarefa_dois = Tarefa("Tarefa Teste 2")
+        tarefa_concluida = Tarefa("Tarefa Teste 3")
+        tarefa_concluida.concluir()
+        lista = ListaDeTarefas()
+
+        lista.adicionar_tarefa(tarefa_um)
+        lista.adicionar_tarefa(tarefa_dois)
+        lista.adicionar_tarefa(tarefa_concluida)
+
+        self.assertEqual(lista.get_tarefas(incluir_concluidas=True), [
+            tarefa_um,
+            tarefa_dois,
+            tarefa_concluida,
         ])
 
 
