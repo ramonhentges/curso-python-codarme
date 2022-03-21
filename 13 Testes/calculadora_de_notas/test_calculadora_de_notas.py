@@ -1,4 +1,20 @@
+import unittest
 from aluno import Aluno
+from calculadora_de_notas import Calculadora
+
+
+class TestMediaNotas(unittest.TestCase):
+    def retorna_media_de_tres_alunos(self):
+        aluno1 = Aluno("Ramon", 9)
+        aluno2 = Aluno("Jose", 7)
+        aluno3 = Aluno("Fernanda", 8)
+        alunos = [aluno1, aluno2, aluno3]
+        calculadora = Calculadora([alunos])
+        self.assertEqual(calculadora.get_media(), 8)
+
+
+unittest.main()
+
 """
 CALCULADORA DE NOTAS
 ====================
@@ -15,15 +31,3 @@ CALCULADORA DE NOTAS
     - 1 <= nota < 3    =>    "E"
     - 0 <= nota < 1    =>    "F
 """
-
-
-class Calculadora:
-    def __init__(self, alunos: list[Aluno]):
-        self.alunos = alunos
-
-    def get_media(self):
-        soma = 0
-        for aluno in self.alunos:
-            soma += aluno.nota
-        media = soma / len(self.alunos)
-        return media
