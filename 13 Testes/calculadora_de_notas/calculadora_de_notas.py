@@ -18,8 +18,9 @@ CALCULADORA DE NOTAS
 
 
 class Calculadora:
-    def __init__(self, alunos: list[Aluno]):
+    def __init__(self, alunos: list[Aluno], media: int):
         self.alunos = alunos
+        self.media = media
 
     def get_media(self):
         soma = 0
@@ -27,3 +28,50 @@ class Calculadora:
             soma += aluno.nota
         media = soma / len(self.alunos)
         return media
+
+    def get_maior_nota(self):
+        maior = 0
+        for aluno in self.alunos:
+            if aluno.nota > maior:
+                maior = aluno.nota
+        return maior
+
+    def get_menor_nota(self):
+        menor = 10
+        for aluno in self.alunos:
+            if aluno.nota < menor:
+                menor = aluno.nota
+        return menor
+
+    def get_aprovados(self):
+        aprovados = []
+        for aluno in self.alunos:
+            if aluno.nota >= self.media:
+                aprovados.append(aluno)
+        return aprovados
+
+    def get_reprovados(self):
+        reprovados = []
+        for aluno in self.alunos:
+            if aluno.nota < self.media:
+                reprovados.append(aluno)
+        return reprovados
+
+    def get_letras(self):
+        letras = []
+        for aluno in self.alunos:
+            if aluno.nota == 10:
+                letras.append("A+")
+            elif aluno.nota >= 9:
+                letras.append("A")
+            elif aluno.nota >= 7:
+                letras.append("B")
+            elif aluno.nota >= 5:
+                letras.append("C")
+            elif aluno.nota >= 3:
+                letras.append("D")
+            elif aluno.nota >= 1:
+                letras.append("E")
+            elif aluno.nota >= 0:
+                letras.append("F")
+        return letras

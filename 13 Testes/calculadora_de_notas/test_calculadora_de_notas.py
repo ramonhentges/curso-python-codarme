@@ -4,13 +4,93 @@ from calculadora_de_notas import Calculadora
 
 
 class TestMediaNotas(unittest.TestCase):
-    def retorna_media_de_tres_alunos(self):
+    def test_media_de_tres_alunos(self):
         aluno1 = Aluno("Ramon", 9)
         aluno2 = Aluno("Jose", 7)
         aluno3 = Aluno("Fernanda", 8)
         alunos = [aluno1, aluno2, aluno3]
-        calculadora = Calculadora([alunos])
+        calculadora = Calculadora(alunos, 6)
         self.assertEqual(calculadora.get_media(), 8)
+
+
+class TestMaiorNota(unittest.TestCase):
+    def test_maior_nota_dos_alunos(self):
+        aluno1 = Aluno("Ramon", 9)
+        aluno2 = Aluno("Jose", 7)
+        aluno3 = Aluno("Fernanda", 8)
+        alunos = [aluno1, aluno2, aluno3]
+        calculadora = Calculadora(alunos, 6)
+        self.assertEqual(calculadora.get_maior_nota(), 9)
+
+
+class TestMenorNota(unittest.TestCase):
+    def test_menor_nota_dos_alunos(self):
+        aluno1 = Aluno("Ramon", 9)
+        aluno2 = Aluno("Jose", 7)
+        aluno3 = Aluno("Fernanda", 8)
+        alunos = [aluno1, aluno2, aluno3]
+        calculadora = Calculadora(alunos, 6)
+        self.assertEqual(calculadora.get_menor_nota(), 7)
+
+
+class TestAprovados(unittest.TestCase):
+    def test_receber_aprovados_media_6(self):
+        aluno1 = Aluno("Ramon", 3)
+        aluno2 = Aluno("Jose", 7)
+        aluno3 = Aluno("Fernanda", 6)
+        aluno4 = Aluno("Jose", 5)
+        aluno5 = Aluno("Fernanda", 8)
+        alunos = [aluno1, aluno2, aluno3, aluno4, aluno5]
+        calculadora = Calculadora(alunos, 6)
+        self.assertEqual(calculadora.get_aprovados(), [aluno2, aluno3, aluno5])
+
+    def test_receber_aprovados_media_5(self):
+        aluno1 = Aluno("Ramon", 3)
+        aluno2 = Aluno("Jose", 7)
+        aluno3 = Aluno("Fernanda", 6)
+        aluno4 = Aluno("Jose", 5)
+        aluno5 = Aluno("Fernanda", 8)
+        alunos = [aluno1, aluno2, aluno3, aluno4, aluno5]
+        calculadora = Calculadora(alunos, 5)
+        self.assertEqual(calculadora.get_aprovados(), [
+                         aluno2, aluno3, aluno4, aluno5])
+
+
+class TestRerovados(unittest.TestCase):
+    def test_receber_reprovados_media_6(self):
+        aluno1 = Aluno("Ramon", 3)
+        aluno2 = Aluno("Jose", 7)
+        aluno3 = Aluno("Fernanda", 6)
+        aluno4 = Aluno("Jose", 5)
+        aluno5 = Aluno("Fernanda", 8)
+        alunos = [aluno1, aluno2, aluno3, aluno4, aluno5]
+        calculadora = Calculadora(alunos, 6)
+        self.assertEqual(calculadora.get_reprovados(), [aluno1, aluno4])
+
+    def test_receber_reprovados_media_5(self):
+        aluno1 = Aluno("Ramon", 3)
+        aluno2 = Aluno("Jose", 7)
+        aluno3 = Aluno("Fernanda", 6)
+        aluno4 = Aluno("Jose", 5)
+        aluno5 = Aluno("Fernanda", 8)
+        alunos = [aluno1, aluno2, aluno3, aluno4, aluno5]
+        calculadora = Calculadora(alunos, 5)
+        self.assertEqual(calculadora.get_reprovados(), [aluno1])
+
+
+class TestMenorNota(unittest.TestCase):
+    def test_menor_nota_dos_alunos(self):
+        aluno1 = Aluno("Ramon", 3)
+        aluno2 = Aluno("Jose", 7)
+        aluno3 = Aluno("Fernanda", 6)
+        aluno4 = Aluno("Jose", 0)
+        aluno5 = Aluno("Fernanda", 10)
+        aluno6 = Aluno("Fernanda", 9)
+        aluno7 = Aluno("Fernanda", 2)
+        alunos = [aluno1, aluno2, aluno3, aluno4, aluno5, aluno6, aluno7]
+        calculadora = Calculadora(alunos, 6)
+        self.assertEqual(calculadora.get_letras(), [
+                         "D", "B", "C", "F", "A+", "A", "E"])
 
 
 unittest.main()
