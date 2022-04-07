@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import timedelta
 from django.utils import timezone
 from rest_framework import serializers
 
@@ -16,6 +16,13 @@ class AgendamentoSerializer(serializers.ModelSerializer):
         if value < timezone.now():
             raise serializers.ValidationError(
                 "Agendamento não pode ser feito no passsado")
+        max_datetime = value + timedelta(minutes=30)
+        min_datetime = value - timedelta(minutes=30)
+        count = Agendamento.objects.filter(
+            data_horario__gt=min_datetime).filter(data_horario__lt=max_datetime).count()
+        if count > 0:
+            raise serializers.ValidationError(
+                "O horário entre atendimentos deve ter 30 minutos de intervalo")
         return value
 
     def validate_telefone_cliente(self, value: str):
@@ -35,9 +42,16 @@ class AgendamentoSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         telefone_cliente = attrs.get("telefone_cliente", "")
         email_cliente = attrs.get("email_cliente", "")
+        data_horario = attrs.get("data_horario", "")
         if email_cliente.endswith(".br") and telefone_cliente.startswith("+") and not telefone_cliente.startswith("+55"):
             raise serializers.ValidationError(
-                "E-mail brasileiro deve ter um telefone do Brasil")
+                {'email_cliente': ["E-mail brasileiro deve ter um telefone do Brasil"]})
+        data = data_horario.date()
+        agendamentos_no_dia = Agendamento.objects.filter(
+            email_cliente=email_cliente).filter(data_horario__date=data).count()
+        if agendamentos_no_dia > 0:
+            raise serializers.ValidationError(
+                {'data_horario': ["Você só pode realizar um agendamento por dia"]})
         return attrs
 
 #    def create(self, validated_data):
