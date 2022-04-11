@@ -18,7 +18,7 @@ class AgendamentoSerializer(serializers.ModelSerializer):
                 "Agendamento não pode ser feito no passsado")
         max_datetime = value + timedelta(minutes=30)
         min_datetime = value - timedelta(minutes=30)
-        count = Agendamento.objects.filter(
+        count = Agendamento.objects.filter(cancelado=False).filter(
             data_horario__gt=min_datetime).filter(data_horario__lt=max_datetime).count()
         if count > 0:
             raise serializers.ValidationError(
@@ -47,7 +47,7 @@ class AgendamentoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'email_cliente': ["E-mail brasileiro deve ter um telefone do Brasil"]})
         data = data_horario.date()
-        agendamentos_no_dia = Agendamento.objects.filter(
+        agendamentos_no_dia = Agendamento.objects.filter(cancelado=False).filter(
             email_cliente=email_cliente).filter(data_horario__date=data).count()
         if agendamentos_no_dia > 0:
             raise serializers.ValidationError(
