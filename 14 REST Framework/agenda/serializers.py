@@ -2,7 +2,7 @@ from datetime import timedelta
 from django.utils import timezone
 from rest_framework import serializers
 
-from agenda.models import Agendamento
+from agenda.models import Agendamento, entre_horario_trabalho
 import re
 
 
@@ -23,6 +23,9 @@ class AgendamentoSerializer(serializers.ModelSerializer):
         if count > 0:
             raise serializers.ValidationError(
                 "O horário entre atendimentos deve ter 30 minutos de intervalo")
+        if not entre_horario_trabalho(value, value.date()):
+            raise serializers.ValidationError(
+                "Não está dentro do horário de trabalho")
         return value
 
     def validate_telefone_cliente(self, value: str):
