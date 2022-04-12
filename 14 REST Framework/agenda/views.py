@@ -1,15 +1,41 @@
 from datetime import datetime, timezone, timedelta
+from urllib import request
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import mixins
+from rest_framework import generics
 from agenda.models import Agendamento, entre_horario_trabalho, entre_intervalo
 from agenda.serializers import AgendamentoSerializer
 
 # Create your views here.
 
 
-@api_view(http_method_names=["GET", "PATCH", "DELETE"])
+class AgendamentoDetail(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView
+):
+    queryset = Agendamento.objects.exclude(cancelado=True)
+    serializer_class = AgendamentoSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        self.partial_update(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+""" @api_view(http_method_names=["GET", "PATCH", "DELETE"])
 def agendamento_detail(request, id):
     obj = get_object_or_404(Agendamento, id=id, cancelado=False)
     if request.method == "GET":
@@ -28,9 +54,25 @@ def agendamento_detail(request, id):
         obj.cancelado = True
         obj.save()
         return Response(status=204)
+"""
 
 
-@api_view(http_method_names=["GET", "POST"])
+class AgendamentoList(
+        mixins.ListModelMixin,
+        mixins.CreateModelMixin,
+        generics.GenericAPIView):
+
+    queryset = Agendamento.objects.exclude(cancelado=True)
+    serializer_class = AgendamentoSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+""" @api_view(http_method_names=["GET", "POST"])
 def agendamento_list(request):
     if request.method == "GET":
         qs = Agendamento.objects.exclude(cancelado=True)
@@ -44,6 +86,7 @@ def agendamento_list(request):
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
+ """
 
 
 @api_view(http_method_names=["GET"])
