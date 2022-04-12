@@ -15,7 +15,7 @@ class AgendamentoSerializer(serializers.ModelSerializer):
     def validate_data_horario(self, value):
         if value < timezone.now():
             raise serializers.ValidationError(
-                "Agendamento não pode ser feito no passsado")
+                "Agendamento não pode ser feito no passado")
         max_datetime = value + timedelta(minutes=30)
         min_datetime = value - timedelta(minutes=30)
         count = Agendamento.objects.filter(cancelado=False).filter(
