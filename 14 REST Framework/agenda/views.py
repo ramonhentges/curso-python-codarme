@@ -5,32 +5,34 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import mixins
+from rest_framework import generics
 from agenda.models import Agendamento, entre_horario_trabalho, entre_intervalo
 from agenda.serializers import AgendamentoSerializer
 
 # Create your views here.
 
 
-class AgendamentoDetail(APIView):
-    def get(self, request, id):
-        obj = get_object_or_404(Agendamento, id=id, cancelado=False)
-        serializer = AgendamentoSerializer(obj)
-        return JsonResponse(serializer.data)
+class AgendamentoDetail(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView
+):
+    queryset = Agendamento.objects.exclude(cancelado=True)
+    serializer_class = AgendamentoSerializer
 
-    def patch(self, request, id):
-        obj = get_object_or_404(Agendamento, id=id, cancelado=False)
-        serializer = AgendamentoSerializer(
-            obj, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=200)
-        return JsonResponse(serializer.errors, status=400)
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
-    def delete(self, request, id):
-        obj = get_object_or_404(Agendamento, id=id, cancelado=False)
-        obj.cancelado = True
-        obj.save()
-        return Response(status=204)
+    def patch(self, request, *args, **kwargs):
+        self.partial_update(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 """ @api_view(http_method_names=["GET", "PATCH", "DELETE"])
@@ -55,19 +57,19 @@ def agendamento_detail(request, id):
 """
 
 
-class AgendamentoList(APIView):
-    def get(self, request):
-        qs = Agendamento.objects.exclude(cancelado=True)
-        serializer = AgendamentoSerializer(qs, many=True)
-        return JsonResponse(serializer.data, safe=False)
+class AgendamentoList(
+        mixins.ListModelMixin,
+        mixins.CreateModelMixin,
+        generics.GenericAPIView):
 
-    def post(self, request):
-        data = request.data
-        serializer = AgendamentoSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+    queryset = Agendamento.objects.exclude(cancelado=True)
+    serializer_class = AgendamentoSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 
 """ @api_view(http_method_names=["GET", "POST"])

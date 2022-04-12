@@ -57,6 +57,7 @@ class AgendamentoSerializer(serializers.ModelSerializer):
                 {'data_horario': ["Você só pode realizar um agendamento por dia"]})
         return attrs
 
+
 #    def create(self, validated_data):
 #        agendamento = Agendamento.objects.create(
 #            data_horario=validated_data["data_horario"],
