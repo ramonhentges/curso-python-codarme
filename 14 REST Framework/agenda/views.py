@@ -1,19 +1,37 @@
-from datetime import datetime, timezone, timedelta
-from urllib import request
+from datetime import datetime, timedelta, timezone
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import mixins
-from rest_framework import generics
-from agenda.models import Agendamento, entre_horario_trabalho, entre_intervalo
-from agenda.serializers import AgendamentoSerializer
+from django.contrib.auth.models import AnonymousUser, User
+from agenda.libs.brasil_api import is_feriado
+from agenda.models import Agendamento
+from agenda.serializers import AgendamentoSerializer, PrestadorSerializer
+from agenda.utils import entre_horario_trabalho, entre_intervalo
+
 
 # Create your views here.
 
 
+class IsOwnerOrCreateOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method == "POST":
+            return True
+        #username = request.query_params.get("username", None)
+        print(request.user.username)
+        if not isinstance(request.user, AnonymousUser):
+            return True
+        return False
+
+
+class IsPrestador(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if obj.prestador == request.user:
+            return True
+        return False
+
+
 class AgendamentoDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsPrestador]
     queryset = Agendamento.objects.exclude(cancelado=True)
     serializer_class = AgendamentoSerializer
 
@@ -42,8 +60,22 @@ def agendamento_detail(request, id):
 
 class AgendamentoList(generics.ListCreateAPIView):
 
-    queryset = Agendamento.objects.exclude(cancelado=True)
     serializer_class = AgendamentoSerializer
+    permission_classes = [IsOwnerOrCreateOnly]
+
+    def get_queryset(self):
+        # username = self.request.query_params.get("username", None)
+        username = self.request.user.username
+        queryset = Agendamento.objects.filter(
+            prestador__username=username).exclude(cancelado=True)
+        return queryset
+
+
+class PrestadorList(generics.ListAPIView):
+
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = PrestadorSerializer
+    queryset = User.objects.all()
 
 
 """ @api_view(http_method_names=["GET", "POST"])
@@ -67,14 +99,24 @@ def agendamento_list(request):
 def horarios_list(request):
     if request.method == "GET":
         data_query = request.query_params.get("data")
+        prestador = request.query_params.get("prestador")
+        if prestador == None:
+            return JsonResponse({"username": "Username não informado"}, status=400)
         data = datetime.fromisoformat(data_query).date()
         dt_com_timezone = datetime(
             data.year, data.month, data.day, tzinfo=timezone.utc)
+
+        try:
+            if is_feriado(dt_com_timezone):
+                return JsonResponse([], safe=False)
+        except ValueError:
+            ...
+
         if dt_com_timezone.weekday() == 6:
             return JsonResponse([], safe=False)
 
         horarios_agendados = list(Agendamento.objects.filter(
-            data_horario__date=dt_com_timezone).filter(cancelado=False).order_by('data_horario'))
+            data_horario__date=dt_com_timezone).filter(cancelado=False).filter(prestador__username=prestador).order_by('data_horario'))
         data_hora_inicial = datetime(
             data.year, data.month, data.day,  hour=9, minute=0, second=0, tzinfo=timezone.utc)
         horarios_disponiveis = []
