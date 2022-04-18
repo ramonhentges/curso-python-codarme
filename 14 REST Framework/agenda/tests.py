@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta, timezone
 import json
 from urllib import response
 from rest_framework.test import APITestCase
+from unittest import mock
 
 from agenda.models import Agendamento
 from agenda.serializers import AgendamentoSerializer
@@ -75,3 +76,21 @@ class TestCriacaoAgendamento(APITestCase):
         response = self.client.post(
             "/api/agendamentos/", request_data, format="json")
         self.assertEqual(response.status_code, 400)
+
+
+class TestGetHorarios(APITestCase):
+    @mock.patch("agenda.libs.brasil_api.is_feriado", return_value=True)
+    def test_quando_data_e_feriado_retorna_lista_vazia(self, is_feriado_mock):
+        response = self.client.get(
+            "/api/horarios/?data=2022-12-25&prestador=python")
+        data = json.loads(response.content)
+        self.assertEqual(data, [])
+
+    @mock.patch("agenda.libs.brasil_api.is_feriado", return_value=False)
+    def test_quando_e_dia_comum_retorna_lista_com_horarios(self, is_feriado_mock):
+        response = self.client.get(
+            "/api/horarios/?data=2022-10-05&prestador=python")
+        data = json.loads(response.content)
+        self.assertEqual(data[0], '2022-10-05T09:00:00+00:00')
+        self.assertEqual(data[-1], '2022-10-05T17:30:00+00:00')
+        self.assertEqual(len(data), 16)

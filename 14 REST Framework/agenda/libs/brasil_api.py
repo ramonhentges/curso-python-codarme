@@ -1,9 +1,14 @@
-from datetime import date, timezone
-
+from datetime import date
 import requests
+from django.conf import settings
 
 
 def is_feriado(data: date):
+    if settings.TESTING == True:
+        if date.day == 25 and date.month == 12:
+            return True
+        return False
+
     ano = data.year
     req = requests.get(f"https://brasilapi.com.br/api/feriados/v1/{ano}")
     if req.status_code != 200:

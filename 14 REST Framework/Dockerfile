@@ -12,11 +12,10 @@ WORKDIR /home/python/app
 
 RUN mkdir app
 
-ADD ./requirements.txt /home/python/app
+ADD ./requirements /home/python/app/requirements
 
 # Install any needed packages specified in requirements.txt as root
-RUN pip install -r requirements.txt
-RUN pip install autopep8
+RUN pip install -r ./requirements/dev.txt
 
 # Change to local user
 USER python
